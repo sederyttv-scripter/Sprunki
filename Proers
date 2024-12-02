@@ -6,6 +6,7 @@ function UILib:CreateWindow(Title)
     local ScrollingFrame = Instance.new("ScrollingFrame")
     local UIListLayout = Instance.new("UIListLayout")
     local TitleLabel = Instance.new("TextLabel")
+    local SearchBox = Instance.new("TextBox")
 
     -- Parent to PlayerGui
     ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -32,11 +33,26 @@ function UILib:CreateWindow(Title)
     TitleLabel.TextScaled = true
     TitleLabel.TextWrapped = true
 
+    -- Search Box
+    SearchBox.Parent = Frame
+    SearchBox.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    SearchBox.Position = UDim2.new(0, 0, 0, 50)
+    SearchBox.Size = UDim2.new(1, 0, 0, 40)
+    SearchBox.Font = Enum.Font.SourceSans
+    SearchBox.PlaceholderText = "Search..."
+    SearchBox.Text = ""
+    SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SearchBox.TextScaled = true
+
+    local SearchBoxCorner = Instance.new("UICorner")
+    SearchBoxCorner.CornerRadius = UDim.new(0, 10)
+    SearchBoxCorner.Parent = SearchBox
+
     -- Scrolling Frame
     ScrollingFrame.Parent = Frame
     ScrollingFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    ScrollingFrame.Position = UDim2.new(0, 0, 0, 50) -- Below the title
-    ScrollingFrame.Size = UDim2.new(1, 0, 1, -50) -- Remaining space
+    ScrollingFrame.Position = UDim2.new(0, 0, 0, 90) -- Below the search box
+    ScrollingFrame.Size = UDim2.new(1, 0, 1, -90) -- Remaining space
     ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0) -- Auto size
     ScrollingFrame.ScrollBarThickness = 10
     ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(200, 200, 200)
@@ -56,7 +72,7 @@ function UILib:CreateWindow(Title)
 
     local Window = {}
 
-    -- Enhanced Button Function with Animations
+    -- Button Function
     function Window:Button(Name, Callback)
         local Button = Instance.new("TextButton")
         Button.Parent = ScrollingFrame
@@ -73,22 +89,8 @@ function UILib:CreateWindow(Title)
         ButtonCorner.CornerRadius = UDim.new(0, 10)
         ButtonCorner.Parent = Button
 
-        -- Hover Animation
-        Button.MouseEnter:Connect(function()
-            game:GetService("TweenService"):Create(
-                Button,
-                TweenInfo.new(0.2),
-                {Size = UDim2.new(0.85, 0, 0, 55), BackgroundColor3 = Color3.fromRGB(55, 55, 55)}
-            ):Play()
-        end)
-
-        Button.MouseLeave:Connect(function()
-            game:GetService("TweenService"):Create(
-                Button,
-                TweenInfo.new(0.2),
-                {Size = UDim2.new(0.8, 0, 0, 50), BackgroundColor3 = Color3.fromRGB(45, 45, 45)}
-            ):Play()
-        end)
+        -- Enable Filtering
+        Button.Name = Name
 
         -- Button Click
         Button.MouseButton1Click:Connect(function()
@@ -96,7 +98,7 @@ function UILib:CreateWindow(Title)
         end)
     end
 
-    -- Toggle Function with Smooth Feedback
+    -- Toggle Function
     function Window:Toggle(Name, Callback)
         local ToggleState = false
         local ToggleButton = Instance.new("TextButton")
@@ -135,23 +137,18 @@ function UILib:CreateWindow(Title)
         end)
     end
 
-    -- Label Function
-    function Window:Label(Text)
-        local Label = Instance.new("TextLabel")
-        Label.Parent = ScrollingFrame
-        Label.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        Label.Size = UDim2.new(0.8, 0, 0, 50)
-        Label.Font = Enum.Font.SourceSans
-        Label.Text = Text or "Label Text"
-        Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Label.TextScaled = true
-        Label.TextWrapped = true
-
-        -- Rounded corners
-        local LabelCorner = Instance.new("UICorner")
-        LabelCorner.CornerRadius = UDim.new(0, 10)
-        LabelCorner.Parent = Label
-    end
+    -- Filtering Logic
+    SearchBox.Changed:Connect(function()
+        for _, item in pairs(ScrollingFrame:GetChildren()) do
+            if item:IsA("TextButton") or item:IsA("TextLabel") then
+                if string.find(string.lower(item.Name), string.lower(SearchBox.Text)) then
+                    item.Visible = true
+                else
+                    item.Visible = false
+                end
+            end
+        end
+    end)
 
     return Window
 end
