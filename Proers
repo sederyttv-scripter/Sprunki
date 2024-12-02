@@ -2,7 +2,7 @@ local UILib = {}
 
 function UILib:CreateWindow(Title)
     local ScreenGui = Instance.new("ScreenGui")
-    local Frame = Instance.new("Frame")
+    local Frame = Instance.new("ScrollingFrame")
     local ScrollingFrame = Instance.new("ScrollingFrame")  -- Add scrolling frame
     local UIListLayout = Instance.new("UIListLayout")
     local TitleLabel = Instance.new("TextLabel")
