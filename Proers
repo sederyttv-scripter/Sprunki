@@ -45,7 +45,61 @@ function UILib:CreateWindow(Title)
         ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 20)
     end)
 
+    -- Draggable GUI
+    local dragging, dragStart, startPos
+    local function UpdateDrag(input)
+        local delta = input.Position - dragStart
+        Frame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+
+    Frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    Frame.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            UpdateDrag(input)
+        end
+    end)
+
     local Window = {}
+
+    -- Add Animation Effects
+    local function AddAnimationEffect(Object)
+        Object.MouseEnter:Connect(function()
+            Object:TweenSize(
+                UDim2.new(0.92, 0, 0, 55), -- Slightly larger
+                Enum.EasingDirection.Out,
+                Enum.EasingStyle.Quad,
+                0.2,
+                true
+            )
+        end)
+
+        Object.MouseLeave:Connect(function()
+            Object:TweenSize(
+                UDim2.new(0.9, 0, 0, 50), -- Original size
+                Enum.EasingDirection.Out,
+                Enum.EasingStyle.Quad,
+                0.2,
+                true
+            )
+        end)
+    end
 
     -- Button Function
     function Window:Button(Name, Callback)
@@ -57,6 +111,9 @@ function UILib:CreateWindow(Title)
         Button.Text = Name or "Button"
         Button.TextColor3 = Color3.fromRGB(255, 255, 255)
         Button.TextScaled = true
+
+        AddAnimationEffect(Button)
+
         Button.MouseButton1Click:Connect(function()
             pcall(Callback)
         end)
@@ -72,6 +129,8 @@ function UILib:CreateWindow(Title)
         Label.Text = Text or "Label"
         Label.TextColor3 = Color3.fromRGB(255, 255, 255)
         Label.TextScaled = true
+
+        AddAnimationEffect(Label)
     end
 
     -- Toggle Function
@@ -86,6 +145,8 @@ function UILib:CreateWindow(Title)
         ToggleButton.Text = Name .. ": OFF"
         ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         ToggleButton.TextScaled = true
+
+        AddAnimationEffect(ToggleButton)
 
         ToggleButton.MouseButton1Click:Connect(function()
             ToggleState = not ToggleState
