@@ -32,78 +32,33 @@ function UILib:CreateWindow(Title)
     ScrollingFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     ScrollingFrame.Position = UDim2.new(0, 0, 0, 50) -- Below the title
     ScrollingFrame.Size = UDim2.new(1, 0, 1, -50) -- Takes up the remaining space in the frame
-    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     ScrollingFrame.ScrollBarThickness = 10
-    ScrollingFrame.VerticalScrollBarPosition = Enum.ScrollBarPosition.Right
-    ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 
     -- Add UIListLayout to ScrollingFrame
     UIListLayout.Parent = ScrollingFrame
-    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     UIListLayout.Padding = UDim.new(0, 10)
 
-    -- Update CanvasSize when elements are added
+    -- Update CanvasSize automatically
     UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 20)
     end)
-
-    -- Draggable
-    local function MakeDraggable(gui)
-        gui.Active = true
-        gui.Draggable = true
-    end
-    MakeDraggable(Frame)
 
     local Window = {}
 
     -- Button Function
     function Window:Button(Name, Callback)
         local Button = Instance.new("TextButton")
-
         Button.Parent = ScrollingFrame
         Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        Button.Size = UDim2.new(0.8, 0, 0, 50)
+        Button.Size = UDim2.new(0.9, 0, 0, 50)
         Button.Font = Enum.Font.SourceSansBold
         Button.Text = Name or "Button"
         Button.TextColor3 = Color3.fromRGB(255, 255, 255)
         Button.TextScaled = true
-        Button.TextWrapped = true
-
         Button.MouseButton1Click:Connect(function()
             pcall(Callback)
-        end)
-    end
-
-    -- Toggle Function
-    function Window:Toggle(Name, Callback)
-        local ToggleFrame = Instance.new("Frame")
-        local ToggleButton = Instance.new("TextButton")
-        local ToggleState = false
-
-        -- Toggle Frame
-        ToggleFrame.Parent = ScrollingFrame
-        ToggleFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        ToggleFrame.Size = UDim2.new(0.8, 0, 0, 50)
-
-        -- Toggle Button
-        ToggleButton.Parent = ToggleFrame
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
-        ToggleButton.Size = UDim2.new(1, 0, 1, 0)
-        ToggleButton.Font = Enum.Font.SourceSansBold
-        ToggleButton.Text = Name or "Toggle"
-        ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        ToggleButton.TextScaled = true
-        ToggleButton.TextWrapped = true
-
-        ToggleButton.MouseButton1Click:Connect(function()
-            ToggleState = not ToggleState
-            if ToggleState then
-                ToggleButton.Text = Name .. ": ON"
-            else
-                ToggleButton.Text = Name .. ": OFF"
-            end
-            pcall(Callback, ToggleState)
         end)
     end
 
@@ -112,12 +67,31 @@ function UILib:CreateWindow(Title)
         local Label = Instance.new("TextLabel")
         Label.Parent = ScrollingFrame
         Label.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        Label.Size = UDim2.new(0.8, 0, 0, 50)
+        Label.Size = UDim2.new(0.9, 0, 0, 50)
         Label.Font = Enum.Font.SourceSans
-        Label.Text = Text or "Label Text"
+        Label.Text = Text or "Label"
         Label.TextColor3 = Color3.fromRGB(255, 255, 255)
         Label.TextScaled = true
-        Label.TextWrapped = true
+    end
+
+    -- Toggle Function
+    function Window:Toggle(Name, Callback)
+        local ToggleButton = Instance.new("TextButton")
+        local ToggleState = false
+
+        ToggleButton.Parent = ScrollingFrame
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        ToggleButton.Size = UDim2.new(0.9, 0, 0, 50)
+        ToggleButton.Font = Enum.Font.SourceSansBold
+        ToggleButton.Text = Name .. ": OFF"
+        ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        ToggleButton.TextScaled = true
+
+        ToggleButton.MouseButton1Click:Connect(function()
+            ToggleState = not ToggleState
+            ToggleButton.Text = Name .. (ToggleState and ": ON" or ": OFF")
+            pcall(Callback, ToggleState)
+        end)
     end
 
     return Window
