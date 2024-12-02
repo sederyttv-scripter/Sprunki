@@ -1,0 +1,143 @@
+local UILib = {}
+
+function UILib:CreateWindow(Title)
+    local ScreenGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local ScrollingFrame = Instance.new("ScrollingFrame")  -- Add scrolling frame
+    local UIListLayout = Instance.new("UIListLayout")
+    local TitleLabel = Instance.new("TextLabel")
+
+    -- Parent to PlayerGui
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.ResetOnSpawn = false
+
+    -- Main Frame
+    Frame.Parent = ScreenGui
+    Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    Frame.Position = UDim2.new(0.3, 0, 0.2, 0)
+    Frame.Size = UDim2.new(0, 400, 0, 500)
+
+    -- Title
+    TitleLabel.Parent = Frame
+    TitleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    TitleLabel.Size = UDim2.new(1, 0, 0, 50)
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.Text = Title or "UI Library"
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.TextScaled = true
+    TitleLabel.TextWrapped = true
+
+    -- Scrolling Frame
+    ScrollingFrame.Parent = Frame
+    ScrollingFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    ScrollingFrame.Position = UDim2.new(0, 0, 0, 50)  -- Below the title
+    ScrollingFrame.Size = UDim2.new(1, 0, 1, -50)  -- Takes up the remaining space in the frame
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)  -- Start with no content size
+    ScrollingFrame.ScrollBarThickness = 10  -- Adjust scrollbar thickness
+    ScrollingFrame.Visible = true
+
+    -- Add UIListLayout to ScrollingFrame
+    UIListLayout.Parent = ScrollingFrame
+    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 10)
+
+    -- Draggable
+    local function MakeDraggable(gui)
+        gui.Active = true
+        gui.Draggable = true
+    end
+    MakeDraggable(Frame)
+
+    local Window = {}
+
+    -- Button Function
+    function Window:Button(Name, Callback)
+        local Button = Instance.new("TextButton")
+
+        Button.Parent = ScrollingFrame  -- Parent to ScrollingFrame instead of Frame
+        Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        Button.Size = UDim2.new(0.8, 0, 0, 50)
+        Button.Font = Enum.Font.SourceSansBold
+        Button.Text = Name or "Button"
+        Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Button.TextScaled = true
+        Button.TextWrapped = true
+
+        Button.MouseButton1Click:Connect(function()
+            pcall(Callback)
+        end)
+    end
+
+    -- Dropdown Function
+    function Window:Dropdown(Name, Options, Callback)
+        local DropdownFrame = Instance.new("Frame")
+        local DropdownButton = Instance.new("TextButton")
+        local OptionsFrame = Instance.new("Frame")
+        local UIListLayout = Instance.new("UIListLayout")
+
+        -- Dropdown Frame
+        DropdownFrame.Parent = ScrollingFrame  -- Parent to ScrollingFrame
+        DropdownFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        DropdownFrame.Size = UDim2.new(0.8, 0, 0, 50)
+
+        -- Dropdown Button
+        DropdownButton.Parent = DropdownFrame
+        DropdownButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        DropdownButton.Size = UDim2.new(1, 0, 1, 0)
+        DropdownButton.Font = Enum.Font.SourceSansBold
+        DropdownButton.Text = Name or "Dropdown"
+        DropdownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        DropdownButton.TextScaled = true
+        DropdownButton.TextWrapped = true
+
+        -- Options Frame
+        OptionsFrame.Parent = Frame
+        OptionsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        OptionsFrame.Size = UDim2.new(0.8, 0, 0, #Options * 50)
+        OptionsFrame.Visible = false
+
+        UIListLayout.Parent = OptionsFrame
+        UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+        -- Add Options
+        for _, Option in pairs(Options) do
+            local OptionButton = Instance.new("TextButton")
+            OptionButton.Parent = OptionsFrame
+            OptionButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+            OptionButton.Size = UDim2.new(1, 0, 0, 50)
+            OptionButton.Font = Enum.Font.SourceSansBold
+            OptionButton.Text = Option
+            OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            OptionButton.TextScaled = true
+            OptionButton.TextWrapped = true
+
+            OptionButton.MouseButton1Click:Connect(function()
+                Callback(Option)
+                OptionsFrame.Visible = false
+            end)
+        end
+
+        -- Toggle Options
+        DropdownButton.MouseButton1Click:Connect(function()
+            OptionsFrame.Visible = not OptionsFrame.Visible
+        end)
+    end
+
+    -- Add a Label Text Function
+    function Window:Label(Text)
+        local Label = Instance.new("TextLabel")
+        Label.Parent = ScrollingFrame  -- Parent to ScrollingFrame
+        Label.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        Label.Size = UDim2.new(0.8, 0, 0, 50)
+        Label.Font = Enum.Font.SourceSans
+        Label.Text = Text or "Label Text"
+        Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Label.TextScaled = true
+        Label.TextWrapped = true
+    end
+
+    return Window
+end
+
+return UILib
