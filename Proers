@@ -17,7 +17,7 @@ function UILib:CreateWindow(Title)
     Frame.Position = UDim2.new(0.3, 0, 0.2, 0)
     Frame.Size = UDim2.new(0, 400, 0, 500)
 
-    -- Title
+    -- Title Label
     TitleLabel.Parent = Frame
     TitleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     TitleLabel.Size = UDim2.new(1, 0, 0, 50)
@@ -33,7 +33,7 @@ function UILib:CreateWindow(Title)
     ScrollingFrame.Position = UDim2.new(0, 0, 0, 50)  -- Below the title
     ScrollingFrame.Size = UDim2.new(1, 0, 1, -50)  -- Takes up the remaining space in the frame
     ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)  -- Start with no content size
-    ScrollingFrame.ScrollBarThickness = 10  -- Adjust scrollbar thickness
+    ScrollingFrame.ScrollBarThickness = 10
     ScrollingFrame.Visible = true
 
     -- Add UIListLayout to ScrollingFrame
@@ -54,7 +54,6 @@ function UILib:CreateWindow(Title)
     -- Button Function
     function Window:Button(Name, Callback)
         local Button = Instance.new("TextButton")
-
         Button.Parent = ScrollingFrame  -- Parent to ScrollingFrame instead of Frame
         Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         Button.Size = UDim2.new(0.8, 0, 0, 50)
