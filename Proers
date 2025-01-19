@@ -1,156 +1,74 @@
-local UILib = {}
+local UILibrary = {}
 
-function UILib:CreateWindow(Title)
-    local ScreenGui = Instance.new("ScreenGui")
-    local Frame = Instance.new("Frame")
-    local ScrollingFrame = Instance.new("ScrollingFrame")
-    local UIListLayout = Instance.new("UIListLayout")
-    local TitleLabel = Instance.new("TextLabel")
-    local SearchBox = Instance.new("TextBox")
+function UILibrary:CreateWindow(title)
+    local screenGui = Instance.new("ScreenGui")
+    local mainFrame = Instance.new("Frame")
+    local titleLabel = Instance.new("TextLabel")
+    local buttonContainer = Instance.new("Frame")
+    local uiListLayout = Instance.new("UIListLayout")
 
-    -- Parent to PlayerGui
-    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    ScreenGui.ResetOnSpawn = false
+    -- ScreenGui Properties
+    screenGui.Name = "GameGuardianUILibrary"
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    screenGui.ResetOnSpawn = false
 
-    -- Main Frame
-    Frame.Parent = ScreenGui
-    Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    Frame.Position = UDim2.new(0.3, 0, 0.2, 0)
-    Frame.Size = UDim2.new(0, 400, 0, 500)
+    -- MainFrame Properties
+    mainFrame.Name = "MainFrame"
+    mainFrame.Parent = screenGui
+    mainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+    mainFrame.Size = UDim2.new(0, 300, 0, 400)
 
-    -- Rounded corners
-    local FrameCorner = Instance.new("UICorner")
-    FrameCorner.CornerRadius = UDim.new(0, 10)
-    FrameCorner.Parent = Frame
+    -- TitleLabel Properties
+    titleLabel.Name = "TitleLabel"
+    titleLabel.Parent = mainFrame
+    titleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    titleLabel.Size = UDim2.new(1, 0, 0, 30)
+    titleLabel.Font = Enum.Font.SourceSansBold
+    titleLabel.Text = title
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextSize = 20
 
-    -- Title
-    TitleLabel.Parent = Frame
-    TitleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    TitleLabel.Size = UDim2.new(1, 0, 0, 50)
-    TitleLabel.Font = Enum.Font.GothamBold
-    TitleLabel.Text = Title or "UI Library"
-    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TitleLabel.TextScaled = true
-    TitleLabel.TextWrapped = true
+    -- ButtonContainer Properties
+    buttonContainer.Name = "ButtonContainer"
+    buttonContainer.Parent = mainFrame
+    buttonContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    buttonContainer.BackgroundTransparency = 1
+    buttonContainer.Position = UDim2.new(0, 0, 0, 35)
+    buttonContainer.Size = UDim2.new(1, 0, 1, -35)
 
-    -- Search Box
-    SearchBox.Parent = Frame
-    SearchBox.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    SearchBox.Position = UDim2.new(0, 0, 0, 50)
-    SearchBox.Size = UDim2.new(1, 0, 0, 40)
-    SearchBox.Font = Enum.Font.SourceSans
-    SearchBox.PlaceholderText = "Search..."
-    SearchBox.Text = ""
-    SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    SearchBox.TextScaled = true
+    -- UIListLayout Properties
+    uiListLayout.Parent = buttonContainer
+    uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    uiListLayout.Padding = UDim.new(0, 5)
 
-    local SearchBoxCorner = Instance.new("UICorner")
-    SearchBoxCorner.CornerRadius = UDim.new(0, 10)
-    SearchBoxCorner.Parent = SearchBox
+    -- Methods to Add Buttons
+    local function createButton(buttonName, callback)
+        local button = Instance.new("TextButton")
 
-    -- Scrolling Frame
-    ScrollingFrame.Parent = Frame
-    ScrollingFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    ScrollingFrame.Position = UDim2.new(0, 0, 0, 90) -- Below the search box
-    ScrollingFrame.Size = UDim2.new(1, 0, 1, -90) -- Remaining space
-    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0) -- Auto size
-    ScrollingFrame.ScrollBarThickness = 10
-    ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(200, 200, 200)
+        button.Name = buttonName
+        button.Parent = buttonContainer
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        button.BorderSizePixel = 0
+        button.Size = UDim2.new(1, -10, 0, 40)
+        button.Font = Enum.Font.SourceSans
+        button.Text = buttonName
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.TextSize = 18
 
-    -- Add UIListLayout to ScrollingFrame
-    UIListLayout.Parent = ScrollingFrame
-    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    UIListLayout.Padding = UDim.new(0, 10)
-
-    -- Draggable
-    local function MakeDraggable(gui)
-        gui.Active = true
-        gui.Draggable = true
-    end
-    MakeDraggable(Frame)
-
-    local Window = {}
-
-    -- Button Function
-    function Window:Button(Name, Callback)
-        local Button = Instance.new("TextButton")
-        Button.Parent = ScrollingFrame
-        Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        Button.Size = UDim2.new(0.8, 0, 0, 50)
-        Button.Font = Enum.Font.SourceSansBold
-        Button.Text = Name or "Button"
-        Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Button.TextScaled = true
-        Button.TextWrapped = true
-
-        -- Rounded corners
-        local ButtonCorner = Instance.new("UICorner")
-        ButtonCorner.CornerRadius = UDim.new(0, 10)
-        ButtonCorner.Parent = Button
-
-        -- Enable Filtering
-        Button.Name = Name
-
-        -- Button Click
-        Button.MouseButton1Click:Connect(function()
-            pcall(Callback)
-        end)
-    end
-
-    -- Toggle Function
-    function Window:Toggle(Name, Callback)
-        local ToggleState = false
-        local ToggleButton = Instance.new("TextButton")
-        ToggleButton.Parent = ScrollingFrame
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        ToggleButton.Size = UDim2.new(0.8, 0, 0, 50)
-        ToggleButton.Font = Enum.Font.SourceSansBold
-        ToggleButton.Text = Name .. " (OFF)"
-        ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        ToggleButton.TextScaled = true
-        ToggleButton.TextWrapped = true
-
-        -- Rounded corners
-        local ToggleCorner = Instance.new("UICorner")
-        ToggleCorner.CornerRadius = UDim.new(0, 10)
-        ToggleCorner.Parent = ToggleButton
-
-        ToggleButton.MouseButton1Click:Connect(function()
-            ToggleState = not ToggleState
-            if ToggleState then
-                ToggleButton.Text = Name .. " (ON)"
-                game:GetService("TweenService"):Create(
-                    ToggleButton,
-                    TweenInfo.new(0.3),
-                    {BackgroundColor3 = Color3.fromRGB(0, 255, 0)}
-                ):Play()
-            else
-                ToggleButton.Text = Name .. " (OFF)"
-                game:GetService("TweenService"):Create(
-                    ToggleButton,
-                    TweenInfo.new(0.3),
-                    {BackgroundColor3 = Color3.fromRGB(255, 0, 0)}
-                ):Play()
+        button.MouseButton1Click:Connect(function()
+            if callback then
+                callback()
             end
-            pcall(Callback, ToggleState)
         end)
+
+        return button
     end
 
-    -- Filtering Logic
-    SearchBox.Changed:Connect(function()
-        for _, item in pairs(ScrollingFrame:GetChildren()) do
-            if item:IsA("TextButton") or item:IsA("TextLabel") then
-                if string.find(string.lower(item.Name), string.lower(SearchBox.Text)) then
-                    item.Visible = true
-                else
-                    item.Visible = false
-                end
-            end
-        end
-    end)
-
-    return Window
+    return {
+        AddButton = createButton
+    }
 end
 
-return UILib
+return UILibrary
